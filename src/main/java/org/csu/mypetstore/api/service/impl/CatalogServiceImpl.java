@@ -90,6 +90,19 @@ public class CatalogServiceImpl implements CatalogService {
     }
 
     @Override
+    public CommonResponse<ItemVO> getItemByItemId(String itemid) {
+        Item item = itemMapper.selectById(itemid);
+        Product product = productMapper.selectById(item.getProductId());
+        ItemVO itemVO = itemToItemVO(item,product);
+
+        if(itemVO == null){
+            return CommonResponse.createForSuccessMessage("没有该ItemId的item商品信息");
+        }
+
+        return CommonResponse.createForSuccess(itemVO);
+    }
+
+    @Override
     public CommonResponse<List<ItemVO>> getItemsByProductId(String productId) {
         QueryWrapper<Item> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("productid",productId);

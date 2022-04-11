@@ -21,4 +21,6 @@ public interface CatalogService {
     CommonResponse<List<ItemVO>> getItemsByProductId(String productId);
 
     CommonResponse<List<Product>> getProductsByKeyword(String keyword);
+
+    CommonResponse<ItemVO> getItemByItemId(String itemid);
 }

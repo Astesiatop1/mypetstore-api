@@ -25,7 +25,7 @@ public class AccountController {
 
     @PostMapping("login")
     @ResponseBody
-    public CommonResponse<AccountVO> login(
+    public CommonResponse<AccountVO> loginAccount(
             @RequestParam String username,
             @RequestParam String password,
             HttpSession session){
@@ -38,7 +38,7 @@ public class AccountController {
 
     @PostMapping("register")
     @ResponseBody
-    public CommonResponse Register(
+    public CommonResponse RegisterAccount(
             @RequestParam String username,
             @RequestParam String password,
             @RequestParam String repeatedPassword,
@@ -58,7 +58,7 @@ public class AccountController {
             @RequestParam boolean bannerOption,
             HttpSession session){
         if(!password.equals(repeatedPassword)) {
-            return CommonResponse.createForError("两次密码错误");
+            return CommonResponse.createForError("两次密码不一致");
         }
         else {
             CommonResponse isExist = accountService.usernameExist(username);
@@ -94,13 +94,65 @@ public class AccountController {
 
     @PostMapping("/signoff")
     @ResponseBody
-    public CommonResponse logout(HttpSession session) {
+    public CommonResponse signofftAccount(HttpSession session) {
         session.setAttribute("login_account", null);
         // 上线合并购物车就进行了持久化，登录状态下每添一个商品也会进行持久化
         // 退出则无需持久化购物车，只需重置购物车即可
 
         return CommonResponse.createForSuccessMessage("用户已经登出");
     }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public CommonResponse UpdateAccount(
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String repeatedPassword,
+            @RequestParam String firstname,
+            @RequestParam String lastname,
+            @RequestParam String email,
+            @RequestParam String phone,
+            @RequestParam String address1,
+            @RequestParam String address2,
+            @RequestParam String city,
+            @RequestParam String state,
+            @RequestParam String zip,
+            @RequestParam String country,
+            @RequestParam String languagePreference,
+            @RequestParam String favouriteCategoryId,
+            @RequestParam boolean listOption,
+            @RequestParam boolean bannerOption,
+            HttpSession session){
+
+        if(!password.equals(repeatedPassword)) {
+            return CommonResponse.createForError("两次密码不一致");
+        }
+        AccountVO accountVO = new AccountVO();
+        accountVO.setUsername(username);
+        accountVO.setPassword(password);
+        accountVO.setAddress1(address1);
+        accountVO.setAddress2(address2);
+        accountVO.setEmail(email);
+        accountVO.setFirstName(firstname);
+        accountVO.setLastName(lastname);
+        accountVO.setCity(city);
+        accountVO.setCountry(country);
+        accountVO.setStatus("");
+        accountVO.setState(state);
+        accountVO.setZip(zip);
+        accountVO.setPhone(phone);
+
+        accountVO.setLanguagePreference(languagePreference);
+        accountVO.setFavouriteCategoryId(favouriteCategoryId);
+        accountVO.setBannerOption(bannerOption);
+        accountVO.setListOption(listOption);
+        CommonResponse response = accountService.updateAccount(accountVO);
+
+        session.setAttribute("loginAccount",accountVO);
+
+        return response;
+    }
+
 
     @PostMapping("get_login_account_info")
     @ResponseBody
@@ -109,7 +161,7 @@ public class AccountController {
         if(loginAccount != null){
             return  CommonResponse.createForSuccess(loginAccount);
         }
-        return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),"用户为登录，不饿能获取用户信息");
+        return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),"用户未登录，不饿能获取用户信息");
     }
 
 }

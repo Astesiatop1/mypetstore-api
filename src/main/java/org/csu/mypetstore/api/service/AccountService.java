@@ -13,4 +13,6 @@ public interface AccountService {
 
     CommonResponse insertAccount(AccountVO accountVO);
 
+    CommonResponse updateAccount(AccountVO accountVO);
+
 }

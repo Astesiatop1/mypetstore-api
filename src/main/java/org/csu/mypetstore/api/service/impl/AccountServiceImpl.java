@@ -100,6 +100,54 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public CommonResponse updateAccount(AccountVO accountVO) {
+        Account account = new Account();
+        account.setUsername(accountVO.getUsername());
+        account.setEmail(accountVO.getEmail());
+        account.setFirstName(accountVO.getFirstName());
+        account.setLastName(accountVO.getLastName());
+        account.setStatus(accountVO.getStatus());
+        account.setAddress1(accountVO.getAddress1());
+        account.setAddress2(accountVO.getAddress2());
+        account.setCity(accountVO.getCity());
+        account.setState(accountVO.getState());
+        account.setZip(accountVO.getZip());
+        account.setCountry(accountVO.getCountry());
+        account.setPhone(accountVO.getPhone());
+
+        accountMapper.updateById(account);
+
+        Profile profile = new Profile();
+
+        profile.setUsername(accountVO.getUsername());
+        profile.setLanguagePreference(accountVO.getLanguagePreference());
+        profile.setFavouriteCategoryId(accountVO.getFavouriteCategoryId());
+        if(accountVO.isBannerOption()) {
+            profile.setBannerOption(1);
+        }
+        else {
+            profile.setBannerOption(0);
+        }
+        if(accountVO.isListOption()) {
+            profile.setListOption(1);
+        }
+        else{
+            profile.setBannerOption(0);
+        }
+
+        profileMapper.updateById(profile);
+
+        SignOn signOn = new SignOn();
+        signOn.setUsername(accountVO.getUsername());
+        signOn.setPassword(accountVO.getPassword());
+
+        signOnMapper.updateById(signOn);
+
+
+        return CommonResponse.createForSuccess("用户信息修改成功！",accountVO);
+    }
+
+    @Override
     public CommonResponse<AccountVO> getAccount(String username) {
 
         Account account = accountMapper.selectById(username);
