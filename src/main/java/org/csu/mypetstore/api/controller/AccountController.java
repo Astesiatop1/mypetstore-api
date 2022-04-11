@@ -161,7 +161,7 @@ public class AccountController {
         if(loginAccount != null){
             return  CommonResponse.createForSuccess(loginAccount);
         }
-        return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),"用户未登录，不饿能获取用户信息");
+        return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),"用户为登录，不饿能获取用户信息");
     }
 
 }
