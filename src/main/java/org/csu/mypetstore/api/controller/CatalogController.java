@@ -55,6 +55,12 @@ public class CatalogController {
         return catalogService.getItemsByProductId(productId);
     }
 
+    @GetMapping("items/{id}")
+    @ResponseBody
+    public CommonResponse<ItemVO> getItemById(@PathVariable("id") String itemId){
+        return catalogService.getItemById(itemId);
+    }
+
     @GetMapping("categories/searchproducts/{keyword}")
     @ResponseBody
     public CommonResponse<List<Product>> getProductsByKeyword(@PathVariable("keyword") String keyword){
