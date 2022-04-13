@@ -1,20 +1,29 @@
 package org.csu.mypetstore.api.service;
 
 import org.csu.mypetstore.api.common.CommonResponse;
-import org.csu.mypetstore.api.entity.Cart;
+import org.csu.mypetstore.api.entity.CartItem;
+import org.csu.mypetstore.api.vo.CartItemVO;
+import org.csu.mypetstore.api.vo.CartVO;
 
 import java.util.List;
 
 public interface CartService {
-    CommonResponse<List<Cart>> getCartByUsername(String username);
+    CommonResponse<List<CartItem>> getCartByUsername(String username);
 
-    CommonResponse<Cart> insertCart(Cart cart);
+//    CommonResponse<CartItem> insertCart(CartItem cart);
 
-    CommonResponse<Cart> insertCart(String username,String itemId);
+    CommonResponse insertCartItem(CartVO cartVO, String itemId);
 
-    CommonResponse<Cart> deleteOneCart(String username,String itemId);
+    CommonResponse<CartItem> deleteOneCart(String username, String itemId);
 
-    CommonResponse<List<Cart>> deleteAllCart(String username);
+    CommonResponse<List<CartItem>> deleteAllCart(String username);
 
-    CommonResponse updateCartItemQty(Cart cart, int quantity, String itemId);
+    CommonResponse updateCartItemQty(CartVO cart, int quantity, String itemId);
+
+//    CartVO mergeCarts(CartVO tempCart, CartVO persisCart);
+
+    CartVO getCart(String username);
+
+    List<CartItem> getCartItemsByUsername(String username);
+
 }

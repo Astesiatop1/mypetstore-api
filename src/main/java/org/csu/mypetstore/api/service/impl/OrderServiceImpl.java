@@ -2,10 +2,10 @@ package org.csu.mypetstore.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.csu.mypetstore.api.common.CommonResponse;
-import org.csu.mypetstore.api.entity.Cart;
+import org.csu.mypetstore.api.entity.CartItem;
 import org.csu.mypetstore.api.entity.LineItem;
 import org.csu.mypetstore.api.entity.Order;
-import org.csu.mypetstore.api.persistence.CartMapper;
+import org.csu.mypetstore.api.persistence.CartItemMapper;
 import org.csu.mypetstore.api.persistence.LineItemMapper;
 import org.csu.mypetstore.api.persistence.OrderMapper;
 import org.csu.mypetstore.api.service.OrderService;
@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private LineItemMapper lineItemMapper;
     @Autowired
-    private CartMapper cartMapper;
+    private CartItemMapper cartMapper;
 
     @Override
     public CommonResponse<OrderVO> insertOrder(Order order) {
@@ -36,13 +36,13 @@ public class OrderServiceImpl implements OrderService {
         String userId = order.getUsername();
         BigDecimal totalCost = new BigDecimal(0);
 
-        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USERNAME", userId);
-        List<Cart> cartList = cartMapper.selectList(queryWrapper);
+        List<CartItem> cartList = cartMapper.selectList(queryWrapper);
         cartMapper.delete(queryWrapper);
 
         List<LineItem> lineItemList = new ArrayList<>();
-        for (Cart cart : cartList) {
+        for (CartItem cart : cartList) {
             LineItem lineItem = new LineItem();
             lineItem.setOrderId(order.getOrderId());
             lineItem.setLineNum(1000);

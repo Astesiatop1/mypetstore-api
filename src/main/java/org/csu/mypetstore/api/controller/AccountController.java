@@ -4,7 +4,9 @@ package org.csu.mypetstore.api.controller;
 import org.csu.mypetstore.api.common.CommonResponse;
 import org.csu.mypetstore.api.common.ResponseCode;
 import org.csu.mypetstore.api.service.AccountService;
+import org.csu.mypetstore.api.service.CartService;
 import org.csu.mypetstore.api.vo.AccountVO;
+import org.csu.mypetstore.api.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -21,6 +23,8 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private CartService cartService;
 
 
     @PostMapping("login")
@@ -31,7 +35,9 @@ public class AccountController {
             HttpSession session){
         CommonResponse<AccountVO> response = accountService.getAccount(username,password);
         if(response.isSuccess()){
+            CartVO cartVO = cartService.getCart(username);
             session.setAttribute("login_account",response.getData());
+            session.setAttribute("cartVO",cartVO);
         }
         return response;
     }

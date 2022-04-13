@@ -9,9 +9,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@TableName("cart")
-public class Cart {
-    @TableId(value = "USERNAME", type = IdType.INPUT)
+@TableName("cartitem")
+public class CartItem {
+
+    @TableId(value = "ID",type = IdType.INPUT)
+    private int id;
+    @TableField(value = "USERNAME")
     private String userid;
     @TableField(value = "ITEM_ID")
     private String itemid;

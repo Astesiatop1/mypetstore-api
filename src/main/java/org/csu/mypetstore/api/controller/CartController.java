@@ -1,7 +1,7 @@
 package org.csu.mypetstore.api.controller;
 
 import org.csu.mypetstore.api.common.CommonResponse;
-import org.csu.mypetstore.api.entity.Cart;
+import org.csu.mypetstore.api.entity.CartItem;
 import org.csu.mypetstore.api.service.CartService;
 import org.csu.mypetstore.api.vo.AccountVO;
 import org.csu.mypetstore.api.vo.CartVO;
@@ -10,7 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/carts/")
@@ -18,37 +21,69 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @PostMapping("")
+    @ResponseBody
+    public CommonResponse<CartVO> registerCart(HttpSession session) {
+        AccountVO account = (AccountVO) session.getAttribute("login_account");
+        CartVO cart = account == null ? cartService.getCart(null) : cartService.getCart(account.getUsername());
+        session.setAttribute("cart", cart);
+        return CommonResponse.createForSuccess(cart);
+    }
+
+
     @GetMapping("{id}")//ok
     @ResponseBody
-    public CommonResponse<List<Cart>> getCartByUsername(@PathVariable("id") String username) {
+    public CommonResponse<List<CartItem>> getCartByUsername(@PathVariable("id") String username) {
         return cartService.getCartByUsername(username);
     }
 
-    @PostMapping()//ok
+    @GetMapping("viewCart")
     @ResponseBody
-    public CommonResponse<Cart> insertCart(Cart cart){
-        return cartService.insertCart(cart);
+    public CommonResponse<CartVO> viewCart(HttpSession session) {
+//        AccountVO account = (AccountVO) session.getAttribute("login_account");
+        CartVO cart = (CartVO) session.getAttribute("cart");
+//        CartVO cartVO = cartService.getCart(account.getUsername());
+        return CommonResponse.createForSuccess(cart);
     }
 
-    @PostMapping("{id}/{item}")//OK?
+    @PostMapping("/items/{item_id}")//ok
     @ResponseBody
-    public CommonResponse<Cart> insertCart(@PathVariable("id") String username,@PathVariable("item") String itemId){
-        return cartService.insertCart(username,itemId);
+    public CommonResponse<CartVO> insertCartItem(HttpSession session, @PathVariable("item_id") String itemId){
+        CartVO cartVO = (CartVO)session.getAttribute("cart");
+        AccountVO accountVO = (AccountVO) session.getAttribute("login_account");
+        if(accountVO == null) {
+            return CommonResponse.createForError("用户未登录，请先登录");
+        }
+
+        if (cartVO == null){
+            cartVO = new CartVO();
+            cartVO.setUsername(accountVO.getUsername());
+            cartVO.initMap(new HashMap<String, CartItem>());
+        }
+
+        CommonResponse response = cartService.insertCartItem(cartVO,itemId);
+        session.setAttribute("cart",cartVO);
+        return response;
     }
 
     @DeleteMapping("{id}")//OK
     @ResponseBody
-    public CommonResponse<List<Cart>> deleteCart(@PathVariable("id") String username){
+    public CommonResponse<List<CartItem>> deleteCart(@PathVariable("id") String username){
+
         return cartService.deleteAllCart(username);
     }
 
-    @DeleteMapping("{id}/items")//ok
+    @DeleteMapping("items/{ITEM_ID}")//ok
     @ResponseBody
-    public CommonResponse<Cart> deleteOneCart(@PathVariable("id")String username,@RequestParam("ITEM_ID")String itemId){
-        return cartService.deleteOneCart(username,itemId);
+    public CommonResponse<CartItem> deleteOneCart(@PathVariable("ITEM_ID")String itemId,
+                                                  HttpSession session){
+        AccountVO account = (AccountVO) session.getAttribute("login_account");
+        return cartService.deleteOneCart(account.getUsername(),itemId);
     }
 
-    @PostMapping("/items/{item_id}/quantity/{qty}")
+
+
+    @PatchMapping("/items/{item_id}/quantity/{qty}")
     @ResponseBody
     public CommonResponse updateItemQtyFromCart(HttpSession session,
                                                 @PathVariable("item_id") String itemId,
@@ -56,26 +91,21 @@ public class CartController {
 
         AccountVO accountVO = new AccountVO();
         accountVO = (AccountVO) session.getAttribute("login_Account");
-        CartVO cartVO = (CartVO) session.getAttribute("cart");
-        CartVO cart = cartService.mergeCarts(cartVO, null);
-
+        CartVO cartVO = cartService.getCart(accountVO.getUsername());
         int quantity;
         try {
             quantity = Integer.parseInt(qty);
         } catch (Exception e) {
             return CommonResponse.createForError("数量参数qty错误");
         }
-
-
-        CommonResponse response = cartService.updateCartItemQty(cart, quantity, itemId);
+        CommonResponse response = cartService.updateCartItemQty(cartVO, quantity, itemId);
         return response;
-
     }
 
 
     @PutMapping("{id}")
     @ResponseBody
-    public CommonResponse<Cart> updateCart(@PathVariable("id") String username, Cart cart){
+    public CommonResponse<CartItem> updateCart(@PathVariable("id") String username, CartItem cart){
 //        return cartService.updateCart(username,cart);
         return null;
     }
