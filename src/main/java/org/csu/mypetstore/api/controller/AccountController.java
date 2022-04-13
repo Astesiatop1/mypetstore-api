@@ -105,6 +105,7 @@ public class AccountController {
         // 上线合并购物车就进行了持久化，登录状态下每添一个商品也会进行持久化
         // 退出则无需持久化购物车，只需重置购物车即可
 
+        session.setAttribute("cart",null);
         return CommonResponse.createForSuccessMessage("用户已经登出");
     }
 

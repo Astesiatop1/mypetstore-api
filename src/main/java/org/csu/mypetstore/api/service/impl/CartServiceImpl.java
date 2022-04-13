@@ -108,6 +108,19 @@ public class CartServiceImpl implements CartService {
         cartItem.setQuantity(afterPlusQty);
     }
 
+    @Override
+    public BigDecimal getTotalPrice(CartVO cartVO) {
+        QueryWrapper<CartItem> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("USERNAME",cartVO.getUsername());
+        List<CartItem> cartList = cartItemMapper.selectList(queryWrapper);
+
+        BigDecimal totalPrice= new BigDecimal(0);
+        for(CartItem cartItem : cartList){
+            totalPrice=totalPrice.add(cartItem.getTotalcost());
+        }
+        return totalPrice;
+    }
+
     private CartItem VOToCartItem(CartItemVO cartItemVO) {
         CartItem cartItem = new CartItem();
 //        cartItem.setCartItemId(cartItemVO.getCartItemId());
@@ -147,20 +160,6 @@ public class CartServiceImpl implements CartService {
         return CommonResponse.createForSuccess(cartList);
     }
 
-//    @Override
-//    public CommonResponse<CartItem> insertCart(CartItem cart) {
-//        QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("USERNAME", cart.getUserid()).eq("ITEM_ID", cart.getItemid());
-//        CartItem cart1 = cartItemMapper.selectOne(queryWrapper);
-//        //插入时已经有该商品信息 需要更新
-//        if (cart1 != null) {
-//            cartItemMapper.update(cart, queryWrapper);
-//        } else {
-//            cartItemMapper.insert(cart);
-//        }
-//        return CommonResponse.createForSuccess(cart);
-//
-//    }
 
     @Override
     public CommonResponse insertCartItem(CartVO cartVO, String itemId) {
@@ -214,29 +213,6 @@ public class CartServiceImpl implements CartService {
                 cartItemMapper.update(cartItem, queryWrapper);
 
             }
-
-//        CartItem cart = new CartItem();
-//        cart.setUserid(cartVO.getUsername());
-//        cart.setItemid(itemId);
-//        cart.setProductid(item.getProductId());
-//        cart.setDescription(item.getAttribute1());
-//        cart.setInstock("true");
-//        cart.setQuantity(1);
-//        cart.setListprice(item.getListPrice());
-//        cart.setTotalcost(item.getListPrice());
-//
-//        QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("USERNAME", cart.getUserid()).eq("ITEM_ID", cart.getItemid());
-//        CartItem cart1 = cartItemMapper.selectOne(queryWrapper);
-//        //插入时已经有该商品信息 需要更新
-//        if (cart1 != null) {
-//            cart.setQuantity(cart1.getQuantity()+1);
-//            cart.setTotalcost(cart.getListprice().add(cart1.getTotalcost()));
-//            cartItemMapper.update(cart, queryWrapper);
-//        } else {
-//            cartItemMapper.insert(cart);
-//        }
-
         }
         return CommonResponse.createForSuccess("商品" + itemId + "添加成功", cartVO);
     }
@@ -257,36 +233,4 @@ public class CartServiceImpl implements CartService {
         return CommonResponse.createForSuccessMessage("订单提交后删除购物车中所有的信息");
 
     }
-
-//    @Override
-//    public CommonResponse<Cart> updateCart(String username, Cart cart) {
-//        //只需使用itemid和quantity属性
-//        Item item = itemMapper.selectById(cart.getItemid());
-//        if (item == null) {
-//            return CommonResponse.createForError("没有该Item");
-//        }
-//
-//        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("USERNAME", username).eq("ITEM_ID", cart.getItemid());
-//
-//        cart.setUserid(username);
-//        cart.setProductid(item.getProductId());
-//        cart.setDescription(item.getAttribute1());
-//        cart.setInstock("true");
-//        cart.setListprice(item.getListPrice());
-//        BigDecimal numbers = new BigDecimal(cart.getQuantity().toString());
-//        BigDecimal totalCost = item.getListPrice().multiply(numbers);
-//        cart.setTotalcost(totalCost);
-//        cartMapper.update(cart, queryWrapper);
-//        return CommonResponse.createForSuccess(cart);
-//
-//    }
-
-
-//    @Override
-//    public CommonResponse updateCartItemQty(Cart cart, int quantity, String itemId) {
-//        Map<String, CartItemVO> itemMap = cart.getItemMap();
-//
-//        return null;
-//    }
 }

@@ -2,16 +2,10 @@ package org.csu.mypetstore.api.vo;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Data
-public class OrderVO {
-    private int orderId;
-    private String username;
-    private Date orderDate;
+public class OrderInfoVO {
     private String shipAddress1;
     private String shipAddress2;
     private String shipCity;
@@ -24,8 +18,6 @@ public class OrderVO {
     private String billState;
     private String billZip;
     private String billCountry;
-    private String courier;
-    private BigDecimal totalPrice;
     private String billToFirstName;
     private String billToLastName;
     private String shipToFirstName;
@@ -33,12 +25,5 @@ public class OrderVO {
     private String creditCard;
     private String expiryDate;
     private String cardType;
-    private String locale;
-
-    // orderstatus 表字段注入
-    private String status;
-
-    // LineItemVO 注入
-    private List<LineItemVO> lineItems = new ArrayList<>();
+    private Date time;
 }
-

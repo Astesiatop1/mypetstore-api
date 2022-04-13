@@ -5,6 +5,7 @@ import org.csu.mypetstore.api.entity.CartItem;
 import org.csu.mypetstore.api.vo.CartItemVO;
 import org.csu.mypetstore.api.vo.CartVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface CartService {
@@ -19,6 +20,8 @@ public interface CartService {
     CommonResponse<List<CartItem>> deleteAllCart(String username);
 
     CommonResponse updateCartItemQty(CartVO cart, int quantity, String itemId);
+
+    BigDecimal getTotalPrice(CartVO cartVO);
 
 //    CartVO mergeCarts(CartVO tempCart, CartVO persisCart);
 

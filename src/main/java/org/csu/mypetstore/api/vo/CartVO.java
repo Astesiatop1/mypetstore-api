@@ -18,6 +18,8 @@ public class CartVO {
     // 每个CartItem有一个userid，这里的id是当购物车内没有CartItem时发挥作用
     private String username = null;
 
+    private BigDecimal totalprice;
+
     public void initMap(Map<String, CartItem> itemMap){
         this.itemMap.putAll(itemMap);
     }

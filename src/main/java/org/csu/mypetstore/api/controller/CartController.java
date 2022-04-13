@@ -40,9 +40,8 @@ public class CartController {
     @GetMapping("viewCart")
     @ResponseBody
     public CommonResponse<CartVO> viewCart(HttpSession session) {
-//        AccountVO account = (AccountVO) session.getAttribute("login_account");
         CartVO cart = (CartVO) session.getAttribute("cart");
-//        CartVO cartVO = cartService.getCart(account.getUsername());
+        cart.setTotalprice(cartService.getTotalPrice(cart));
         return CommonResponse.createForSuccess(cart);
     }
 
@@ -99,6 +98,7 @@ public class CartController {
             return CommonResponse.createForError("数量参数qty错误");
         }
         CommonResponse response = cartService.updateCartItemQty(cartVO, quantity, itemId);
+        session.setAttribute("cartVO",cartVO);
         return response;
     }
 
