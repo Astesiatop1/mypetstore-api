@@ -3,13 +3,11 @@ package org.csu.mypetstore.api.service;
 
 
 import org.csu.mypetstore.api.common.CommonResponse;
-import org.csu.mypetstore.api.entity.Order;
-import org.csu.mypetstore.api.vo.CartVO;
+import org.csu.mypetstore.api.entity.OrderInfo;
 import org.csu.mypetstore.api.vo.LineItemVO;
 import org.csu.mypetstore.api.vo.OrderInfoVO;
 import org.csu.mypetstore.api.vo.OrderVO;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public interface OrderService {
@@ -19,10 +17,11 @@ public interface OrderService {
 
     CommonResponse<List<OrderVO>> getOrdersByOrderId(int orderId);
 
-    CommonResponse<List<OrderVO>> createOrder(String username,OrderInfoVO orderInfoVOBill,OrderInfoVO OrderInfoVOShip);
+    CommonResponse<List<OrderVO>> createOrder(String username);
 
-    CommonResponse setOrderInfo(OrderInfoVO orderInfoVO);
+    CommonResponse setOrderInfo(OrderInfo orderInfo);
 
+//    CommonResponse viewOrderInfo(OrderInfoVO orderInfoVOBill,OrderInfoVO orderInfoVOShip);
 
 }
 

@@ -1,7 +1,10 @@
 package org.csu.mypetstore.api.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.csu.mypetstore.api.common.CommonResponse;
 import org.csu.mypetstore.api.entity.Order;
+import org.csu.mypetstore.api.entity.OrderInfo;
+import org.csu.mypetstore.api.persistence.OrderInfoMapper;
 import org.csu.mypetstore.api.service.CartService;
 import org.csu.mypetstore.api.service.OrderService;
 import org.csu.mypetstore.api.vo.CartVO;
@@ -23,9 +26,8 @@ import java.util.List;
 class OrderController {
     @Autowired
     private OrderService orderService;
-
     @Autowired
-    private CartService cartService;
+    private OrderInfoMapper orderInfoMapper;
 
     @GetMapping("user/{username}/orders")//completely OK
     @ResponseBody
@@ -40,18 +42,13 @@ class OrderController {
         return orderService.getOrdersByOrderId(orderId);
     }
 
-    @PostMapping("neworder/{username}")
+    @GetMapping("neworder/{username}")
     @ResponseBody
-    public CommonResponse<List<OrderVO>> createOrderByUsername(@PathVariable("username") String username,HttpSession session) {
-        OrderInfoVO orderInfoVOBill=(OrderInfoVO) session.getAttribute("orderInfoBill");
-        OrderInfoVO orderInfoVOShip=(OrderInfoVO) session.getAttribute("orderInfoShip");
-        session.setAttribute("cart",null);
-        session.setAttribute("orderInfoBill",null);
-        session.setAttribute("orderInfoShip",null);
-        return orderService.createOrder(username,orderInfoVOBill,orderInfoVOShip);
+    public CommonResponse<List<OrderVO>> createOrderByUsername(@PathVariable("username") String username) {
+        return orderService.createOrder(username);
     }
 
-    @PostMapping("setOrderInfoBill")
+    @PostMapping("setOrderInfoBill/{username}")
     @ResponseBody
     public CommonResponse setOrderInfoBill(
             @RequestParam String billAddress1,
@@ -65,39 +62,50 @@ class OrderController {
             @RequestParam String cardType,
             @RequestParam String billToFirstName,
             @RequestParam String billToLastName,
-            HttpSession session) {
+            @PathVariable("username") String username) {
 
-        OrderInfoVO orderInfoVOBill = new OrderInfoVO();
-        orderInfoVOBill.setBillToFirstName(billToFirstName);
-        orderInfoVOBill.setBillToLastName(billToLastName);
-        orderInfoVOBill.setBillAddress1(billAddress1);
-        orderInfoVOBill.setBillAddress2(billAddress2);
-        orderInfoVOBill.setBillCity(billCity);
-        orderInfoVOBill.setBillCountry(billCountry);
-        orderInfoVOBill.setBillState(billState);
-        orderInfoVOBill.setBillZip(billZip);
-        orderInfoVOBill.setCardType(cardType);
-        orderInfoVOBill.setCreditCard(creditCard);
-        orderInfoVOBill.setExpiryDate(expiryDate);
+        OrderInfo orderInfoBill = new OrderInfo();
+        orderInfoBill.setUsername(username);
+
+        orderInfoBill.setBillToFirstName(billToFirstName);
+        orderInfoBill.setBillToLastName(billToLastName);
+        orderInfoBill.setBillAddress1(billAddress1);
+        orderInfoBill.setBillAddress2(billAddress2);
+        orderInfoBill.setBillCity(billCity);
+        orderInfoBill.setBillCountry(billCountry);
+        orderInfoBill.setBillState(billState);
+        orderInfoBill.setBillZip(billZip);
+        orderInfoBill.setCardType(cardType);
+        orderInfoBill.setCreditCard(creditCard);
+        orderInfoBill.setExpiryDate(expiryDate);
+
+        orderInfoBill.setShipToFirstName(billToFirstName);
+        orderInfoBill.setShipToLastName(billToLastName);
+        orderInfoBill.setShipAddress1(billAddress1);
+        orderInfoBill.setShipAddress2(billAddress2);
+        orderInfoBill.setShipCity(billCity);
+        orderInfoBill.setShipCountry(billCountry);
+        orderInfoBill.setShipState(billState);
+        orderInfoBill.setShipZip(billZip);
 
         Date date = new Date();
-        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        String now= dateFormat.format(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String now = dateFormat.format(date);
         try {
             date = dateFormat.parse(now);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-       orderInfoVOBill.setTime(date);
+        orderInfoBill.setOrderDate(date);
 
-        session.setAttribute("orderInfoBill",orderInfoVOBill);
-        session.setAttribute("orderInfoShip",null);
-        CommonResponse response = orderService.setOrderInfo(orderInfoVOBill);
+        orderInfoMapper.insert(orderInfoBill);
+
+        CommonResponse response = orderService.setOrderInfo(orderInfoBill);
         return response;
     }
 
 
-    @PostMapping("setOrderInfoShip")
+    @PostMapping("setOrderInfoShip/{username}")
     @ResponseBody
     public CommonResponse setOrderInfoShip(
             @RequestParam String shipAddress1,
@@ -108,21 +116,36 @@ class OrderController {
             @RequestParam String shipCountry,
             @RequestParam String shipToFirstName,
             @RequestParam String shipToLastName,
-            HttpSession session) {
+            @PathVariable String username) {
 
-        OrderInfoVO orderInfoVO = new OrderInfoVO();
+        OrderInfo orderInfoShip = new OrderInfo();
 
-        orderInfoVO.setShipToFirstName(shipToFirstName);
-        orderInfoVO.setShipToLastName(shipToLastName);
-        orderInfoVO.setShipAddress1(shipAddress1);
-        orderInfoVO.setShipAddress2(shipAddress2);
-        orderInfoVO.setShipCity(shipCity);
-        orderInfoVO.setShipCountry(shipCountry);
-        orderInfoVO.setShipState(shipState);
-        orderInfoVO.setShipZip(shipZip);
+        orderInfoShip.setShipToFirstName(shipToFirstName);
+        orderInfoShip.setShipToLastName(shipToLastName);
+        orderInfoShip.setShipAddress1(shipAddress1);
+        orderInfoShip.setShipAddress2(shipAddress2);
+        orderInfoShip.setShipCity(shipCity);
+        orderInfoShip.setShipCountry(shipCountry);
+        orderInfoShip.setShipState(shipState);
+        orderInfoShip.setShipZip(shipZip);
 
-        session.setAttribute("orderInfoShip",orderInfoVO);
-        CommonResponse response = orderService.setOrderInfo(orderInfoVO);
+        UpdateWrapper<OrderInfo> updateWrapper=new UpdateWrapper<>();
+        updateWrapper.eq("userid",username).set("shipaddr1",shipAddress1)
+                .set("shipaddr2",shipAddress2).set("shipcity",shipCity)
+                .set("shipstate",shipState).set("shipzip",shipZip)
+                .set("shipcountry",shipCountry).set("shiptofirstname",shipToFirstName)
+                .set("shiptolastname",shipToLastName);
+        orderInfoMapper.update(null,updateWrapper);
+
+        CommonResponse response = orderService.setOrderInfo(orderInfoShip);
         return response;
     }
+
+//    @GetMapping("viewOrderInfo")
+//    @ResponseBody
+//    public CommonResponse viewOrderInfo(HttpSession session){
+//        OrderInfoVO orderInfoVOBill= (OrderInfoVO) session.getAttribute("orderInfoBill");
+//        OrderInfoVO orderInfoVOShip= (OrderInfoVO) session.getAttribute("orderInfoShip");
+//        return orderService.viewOrderInfo(orderInfoVOBill,orderInfoVOShip);
+//    }
 }
