@@ -31,6 +31,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CommonResponse updateCartItemQty(CartVO cart, int quantity, String itemId) {
         Map<String, CartItem> itemMap = cart.getItemMap();
+        System.out.println(itemId+itemMap);
         if (!cart.containsItemId(itemId)) {
             // 临时购物车中没有，说明数据库中肯定也没有
             return CommonResponse.createForError("购物车中没有这个item商品");
@@ -55,7 +56,9 @@ public class CartServiceImpl implements CartService {
 
             // 未登录，未合并，只需从临时购物车中更新
             cartItem.setQuantity(quantity);
-            return CommonResponse.createForSuccessMessage("商品"+itemId+"数量更新成功");
+            System.out.println(cart.getItemMap());
+            cart.setTotalprice(this.getTotalPrice(cart));
+            return CommonResponse.createForSuccess("商品"+itemId+"数量更新成功",cart);
         } catch (Exception e) {
             return CommonResponse.createForError("数量更新过程出错");
         }
@@ -214,6 +217,7 @@ public class CartServiceImpl implements CartService {
 
             }
         }
+        cartVO.setTotalprice(this.getTotalPrice(cartVO));
         return CommonResponse.createForSuccess("商品" + itemId + "添加成功", cartVO);
     }
 
