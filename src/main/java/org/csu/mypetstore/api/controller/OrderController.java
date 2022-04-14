@@ -42,13 +42,13 @@ class OrderController {
         return orderService.getOrdersByOrderId(orderId);
     }
 
-    @GetMapping("neworder/{username}")
+    @PostMapping("neworder/{username}")
     @ResponseBody
     public CommonResponse<List<OrderVO>> createOrderByUsername(@PathVariable("username") String username) {
         return orderService.createOrder(username);
     }
 
-    @PostMapping("setOrderInfoBill/{username}")
+    @PostMapping("billinfo/{username}")
     @ResponseBody
     public CommonResponse setOrderInfoBill(
             @RequestParam String billAddress1,
@@ -98,6 +98,9 @@ class OrderController {
         }
         orderInfoBill.setOrderDate(date);
 
+        if(orderInfoMapper.selectById(username)!=null){
+            orderInfoMapper.deleteById(username);
+        }
         orderInfoMapper.insert(orderInfoBill);
 
         CommonResponse response = orderService.setOrderInfo(orderInfoBill);
@@ -105,7 +108,7 @@ class OrderController {
     }
 
 
-    @PostMapping("setOrderInfoShip/{username}")
+    @PostMapping("shipinfo/{username}")
     @ResponseBody
     public CommonResponse setOrderInfoShip(
             @RequestParam String shipAddress1,
