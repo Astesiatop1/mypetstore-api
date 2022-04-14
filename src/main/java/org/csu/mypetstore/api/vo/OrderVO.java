@@ -34,6 +34,7 @@ public class OrderVO {
     private String expiryDate;
     private String cardType;
     private String locale;
+    private String description;
 
     // orderstatus 表字段注入
     private String status;

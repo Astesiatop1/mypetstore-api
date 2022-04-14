@@ -12,6 +12,7 @@ public class LineItemVO {
     private String itemId;
     private int quantity;
     private BigDecimal unitPrice;
+    private String description;
 
     // 另外计算注入
     private BigDecimal total = new BigDecimal(0);

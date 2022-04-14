@@ -145,6 +145,8 @@ public class OrderServiceImpl implements OrderService {
             lineItem.setItemId(cartItem.getItemid());
             lineItem.setQuantity(cartItem.getQuantity());
             lineItem.setUnitPrice(cartItem.getListprice());
+            lineItem.setDescription(cartItem.getDescription());
+            System.out.println(cartItem.getDescription());
             lineNum++;
             lineItemMapper.insert(lineItem);
         }
@@ -214,6 +216,7 @@ public class OrderServiceImpl implements OrderService {
         lineItemVO.setItemId(lineItem.getItemId());
         lineItemVO.setQuantity(lineItem.getQuantity());
         lineItemVO.setUnitPrice(lineItem.getUnitPrice());
+        lineItemVO.setDescription(lineItem.getDescription());
 
         lineItemVO.calculateTotal();
         return lineItemVO;
