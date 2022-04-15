@@ -88,15 +88,16 @@ class OrderController {
         orderInfoBill.setShipState(billState);
         orderInfoBill.setShipZip(billZip);
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        String now = dateFormat.format(date);
+        String dateStr = simpleDateFormat.format(date);
+        Date date2 = new Date();
         try {
-            date = dateFormat.parse(now);
+            date2 = simpleDateFormat.parse(dateStr);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        orderInfoBill.setOrderDate(date);
+        orderInfoBill.setOrderDate(date2);
 
         if(orderInfoMapper.selectById(username)!=null){
             orderInfoMapper.deleteById(username);

@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -123,10 +127,30 @@ public class OrderServiceImpl implements OrderService {
         Sequence sequence =sequenceMapper.selectOne(queryWrapper1);
 
         Order order=new Order();
+        System.out.println();
+
+//        SimpleDateFormat ft =new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+//        String time=ft.format(orderInfo.getOrderDate());
+//        Date date=new Date();
+//        try {
+//            date=ft.parse(time);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateStr = simpleDateFormat.format(date);
+        Date date2 = new Date();
+        try {
+            date2 = simpleDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println(date2);
 
         order.setOrderId(sequence.getNextId()+1);
         order.setUsername(username);
-        order.setOrderDate(orderInfo.getOrderDate());
+        order.setOrderDate(date2);
         order.setBillAddress1(orderInfo.getBillAddress1());
         order.setBillAddress2(orderInfo.getBillAddress2());
         order.setBillCity(orderInfo.getBillCity());
@@ -227,7 +251,18 @@ public class OrderServiceImpl implements OrderService {
         OrderVO orderVO=new OrderVO();
         orderVO.setOrderId(order.getOrderId());
         orderVO.setUsername(order.getUsername());
-        orderVO.setOrderDate(order.getOrderDate());
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateStr = simpleDateFormat.format(date);
+        Date date2 = new Date();
+        try {
+            date2 = simpleDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println(date2);
+        orderVO.setOrderDate(date2);
         orderVO.setShipAddress1(order.getShipAddress1());
         orderVO.setShipAddress2(order.getShipAddress2());
         orderVO.setShipCity(order.getShipCity());
